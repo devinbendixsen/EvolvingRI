@@ -1,0 +1,2 @@
+NaCl_G400_R3.mapped.sort.bam	NaCl_G400_R3.freebayes.vcf
+NaCl_G500_R2.mapped.sort.bam	NaCl_G500_R2.freebayes.vcf
