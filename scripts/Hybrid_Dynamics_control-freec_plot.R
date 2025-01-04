@@ -54,7 +54,7 @@ for (fileName in fileNames) {
   cnv_summary$total = amp+del
   cnv_data <- rbind(cnv_data,cnv_summary)
 }
-
+write.table(cnv_data,file='data/Hybrid_Dynamics_CNV_data.txt')
 # ==============================================================================
 # Environment Colors
 # ==============================================================================
@@ -394,7 +394,7 @@ ggsave('figures/Hybrid_Dynamics_GIN.pdf',width=11,height=5,dpi = 900)
 # ==============================================================================
 # ANOVA of CNV 
 # ==============================================================================
-res_aov <- aov(amp ~ env,
+res_aov <- aov(total ~ env,
                data = H1)
 summary(res_aov)
 post_test <- glht(res_aov,
@@ -402,7 +402,7 @@ post_test <- glht(res_aov,
 summary(post_test)
 plot(post_test)
 
-res_aov <- aov(amp ~ env,
+res_aov <- aov(total ~ env,
                data = H2)
 summary(res_aov)
 post_test <- glht(res_aov,
@@ -410,12 +410,92 @@ post_test <- glht(res_aov,
 summary(post_test)
 plot(post_test)
 
-res_aov <- aov(amp ~ env,
+res_aov <- aov(total ~ env,
                data = H3)
 summary(res_aov)
 post_test <- glht(res_aov,
                   linfct = mcp(env = "Tukey"))
 summary(post_test)
 plot(post_test)
+
+
+# ==============================================================================
+# 
+# ==============================================================================
+
+H1 <- subset(H1,env %in% c('H1F1','H1F2'))
+H1$gen_rep <- paste0(H1$gen,'_',H1$rep)
+p_H1 <- ggplot(H1, aes(x = env, y = total,fill=env))+
+  geom_boxplot()+
+  scale_fill_manual(values=c('#808080','#d4a373'))+
+  geom_line(aes(group=gen_rep))+
+  geom_point(shape=21,fill='white')+
+  theme(panel.background = element_rect(fill = "white"),
+        text=element_text(family="EB Garamond"),
+        plot.margin = margin(0.1, 0.1, 0.1, 0.1, "cm"),
+        axis.title.x=element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_line(colour = "lightgrey", linetype = 1, linewidth = 0.5),
+        panel.grid.minor.y = element_blank(),
+        legend.position='none')+
+  scale_x_discrete(labels=c('F1','F2'))+
+  ylab('genome altered (%)')+
+  ylim(3,20.5)
+t.test(data=H1,total ~ env)
+
+H2 <- subset(H2,env %in% c('H2F1','H2F2'))
+H2$gen_rep <- paste0(H2$gen,'_',H2$rep)
+p_H2 <- ggplot(H2, aes(x = env, y = total,fill=env))+
+  geom_boxplot()+
+  scale_fill_manual(values=c('#808080','#d4a373'))+
+  geom_line(aes(group=gen_rep))+
+  geom_point(shape=21,fill='white')+
+  theme(panel.background = element_rect(fill = "white"),
+        text=element_text(family="EB Garamond"),
+        plot.margin = margin(0.1, 0.1, 0.1, 0.1, "cm"),
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_line(colour = "lightgrey", linetype = 1, linewidth = 0.5),
+        panel.grid.minor.y = element_blank(),
+        legend.position='none')+
+  scale_x_discrete(labels=c('F1','F2'))+
+  ylab('genome altered (%)')+
+  ylim(3,20.5)
+t.test(data=H2,total ~ env)
+
+H3 <- subset(H3,env %in% c('H3F1','H3F2'))
+H3$gen_rep <- paste0(H3$gen,'_',H3$rep)
+p_H3 <- ggplot(H3, aes(x = env, y = total,fill=env))+
+  geom_boxplot()+
+  scale_fill_manual(values=c('#808080','#d4a373'))+
+  geom_line(aes(group=gen_rep))+
+  geom_point(shape=21,fill='white')+
+  theme(panel.background = element_rect(fill = "white"),
+        text=element_text(family="EB Garamond"),
+        plot.margin = margin(0.1, 0.1, 0.1, 0.1, "cm"),
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_line(colour = "lightgrey", linetype = 1, linewidth = 0.5),
+        panel.grid.minor.y = element_blank(),
+        legend.position='none')+
+  scale_x_discrete(labels=c('F1','F2'))+
+  ylab('genome altered (%)')+
+  ylim(3,20.5)
+t.test(data=H3,total ~ env)
+
+p_H1 + p_H2 + p_H3
+ggsave('figures/Hybrid_Dynamics_F1-F2.pdf',width=6,height=2,dpi = 900)
+
+# ==============================================================================
+# 
+# ==============================================================================
+ggplot(c)
 
 

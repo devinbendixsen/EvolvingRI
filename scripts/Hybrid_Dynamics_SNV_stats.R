@@ -55,7 +55,7 @@ for (fileName in fileNames) {
   snv_sample$SNP = as.numeric(snv_sample_stat$V2[56])
   snv_data <- rbind(snv_data,snv_sample)
 }
-
+write.table(snv_data,file='data/Hybrid_Dynamics_SNV_data.txt')
 # ==============================================================================
 # Environment Colors
 # ==============================================================================

@@ -65,7 +65,7 @@ for (fileName in fileNames) {
   
   sv_data <- rbind(sv_data,sv_sample)
 }
-
+write.table(sv_data,file='data/Hybrid_Dynamics_SV_data.txt')
 # ==============================================================================
 # Environment Colors
 # ==============================================================================
