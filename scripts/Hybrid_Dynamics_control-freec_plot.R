@@ -19,9 +19,6 @@ library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(patchwork)
-library(showtext)
-font_add_google("EB Garamond")
-showtext_auto()
 
 # ==============================================================================
 # IMPORT SOMATIC VCFS AND EXTRACT NEEDED DATA
@@ -101,7 +98,6 @@ H1_plot <- ggplot(H1) +
         panel.grid.major.y =  element_line(colour = "lightgrey", linetype = 1, linewidth = 0.5),
         panel.grid.minor.y = element_blank(),
         panel.spacing = unit(0.5, "lines"),
-        text=element_text(family="EB Garamond"),
         legend.spacing.y = unit(-0.35, 'cm'))+
   guides(fill = guide_legend(byrow = TRUE))
 H1_total <- ggplot(H1) + 
@@ -123,7 +119,6 @@ H1_total <- ggplot(H1) +
         panel.grid.major.y = element_line(colour = "white", linetype = 1, linewidth = 0.5),
         panel.grid.minor.y = element_blank(),
         panel.spacing = unit(0.5, "lines"), 
-        text=element_text(family="EB Garamond"),
         legend.position = "none",
         plot.tag.position=c(0.62,0.94),
         plot.tag = element_text(hjust = 0.5)) + 
@@ -154,7 +149,6 @@ H2_plot <- ggplot(H2) +
         panel.grid.major.y =  element_line(colour = "lightgrey", linetype = 1, linewidth = 0.5),
         panel.grid.minor.y = element_blank(),
         panel.spacing = unit(0.5, "lines"),
-        text=element_text(family="EB Garamond"),
         legend.spacing.y = unit(-0.35, 'cm'))+
   guides(fill = guide_legend(byrow = TRUE))
 H2_total <- ggplot(H2) + 
@@ -176,7 +170,6 @@ H2_total <- ggplot(H2) +
         panel.grid.major.y = element_line(colour = "white", linetype = 1, linewidth = 0.5),
         panel.grid.minor.y = element_blank(),
         panel.spacing = unit(0.5, "lines"), 
-        text=element_text(family="EB Garamond"),
         legend.position = "none",
         plot.tag.position=c(0.62,0.94),
         plot.tag = element_text(hjust = 0.5)) + 
@@ -207,7 +200,6 @@ H3_plot <- ggplot(H3) +
         panel.grid.major.y =  element_line(colour = "lightgrey", linetype = 1, linewidth = 0.5),
         panel.grid.minor.y = element_blank(),
         panel.spacing = unit(0.5, "lines"),
-        text=element_text(family="EB Garamond"),
         legend.spacing.y = unit(-0.35, 'cm'))+
   guides(fill = guide_legend(byrow = TRUE))
 
@@ -230,7 +222,6 @@ H3_total <- ggplot(H3) +
         panel.grid.major.y = element_line(colour = "white", linetype = 1, linewidth = 0.5),
         panel.grid.minor.y = element_blank(),
         panel.spacing = unit(0.5, "lines"), 
-        text=element_text(family="EB Garamond"),
         legend.position = "none",
         plot.tag.position=c(0.62,0.94),
         plot.tag = element_text(hjust = 0.5)) + 
@@ -268,14 +259,12 @@ H1_plot <- ggplot(H1) +
         panel.grid.major.y =  element_line(colour = "lightgrey", linetype = 1, linewidth = 0.5),
         panel.grid.minor.y = element_blank(),
         panel.spacing = unit(0.5, "lines"),
-        text=element_text(family="EB Garamond"),
         legend.spacing.y = unit(-0.35, 'cm'))+
   guides(fill = guide_legend(byrow = TRUE))
 
 H1_total <- ggplot(H1) + 
   geom_hline(yintercept=(mean(founder$total)),color='black',linetype='dashed',linewidth=0.5)+
-  stat_summary(aes(x=as.factor(env),y=total,color=env),fun=median, geom="point", shape=95, size=12,stroke=edgewidth,alpha=1)+
-  geom_jitter(aes(x=as.factor(env),y=total,fill=env),shape=21, colour='black',size=markersize, alpha=alpha,width=width,stroke=edgewidth) +
+  geom_boxplot(aes(x=as.factor(env),y=total,fill=env)) +
   scale_fill_manual(values=c(NaCl,LiAc0.01,F1,F2),name ='',labels = c("NaCl", "LiAc0.01", "Hybrid F1",'Hybrid F2'))+
   scale_color_manual(values=c(NaCl,LiAc0.01,F1,F2),name ='',labels = c("NaCl", "LiAc0.01", "Hybrid F1",'Hybrid F2'))+
   theme(axis.title.x=element_blank(), 
@@ -287,12 +276,8 @@ H1_total <- ggplot(H1) +
         panel.grid.major.y = element_line(colour = "white", linetype = 1, linewidth = 0.5),
         panel.grid.minor.y = element_blank(),
         panel.spacing = unit(0.5, "lines"), 
-        text=element_text(family="EB Garamond"),
-        legend.position = "none",
-        plot.tag.position=c(0.62,0.94),
-        plot.tag = element_text(hjust = 0.5)) + 
-  ylab('genome altered (%)') +
-  labs(tag='TOTAL')
+        legend.position = "none") + 
+  ylab('genome\naltered (%)') 
 
 H2 <- subset(cnv_data, (env == "NaCl" | env == "LiAc0.02" | env =='H2F1' | env =='H2F2'))
 H2$env <- factor(H2$env , levels=c('NaCl','LiAc0.02','H2F1','H2F2'))
@@ -314,14 +299,12 @@ H2_plot <- ggplot(H2) +
         panel.grid.major.y =  element_line(colour = "lightgrey", linetype = 1, linewidth = 0.5),
         panel.grid.minor.y = element_blank(),
         panel.spacing = unit(0.5, "lines"),
-        text=element_text(family="EB Garamond"),
         legend.spacing.y = unit(-0.35, 'cm'))+
   guides(fill = guide_legend(byrow = TRUE))
 
 H2_total <- ggplot(H2) + 
   geom_hline(yintercept=(mean(founder$total)),color='black',linetype='dashed',linewidth=0.5)+
-  stat_summary(aes(x=as.factor(env),y=total,color=env),fun=median, geom="point", shape=95, size=12,stroke=edgewidth,alpha=1)+
-  geom_jitter(aes(x=as.factor(env),y=total,fill=env),shape=21, colour='black',size=markersize, alpha=alpha,width=width,stroke=edgewidth) +
+  geom_boxplot(aes(x=as.factor(env),y=total,fill=env)) +
   scale_fill_manual(values=c(NaCl,LiAc0.02,F1,F2),name ='',labels = c("NaCl", "LiAc 0.02", "Hybrid F1",'Hybrid F2'))+
   scale_color_manual(values=c(NaCl,LiAc0.02,F1,F2),name ='',labels = c("NaCl", "LiAc 0.02", "Hybrid F1",'Hybrid F2'))+
   theme(axis.title.x=element_blank(), 
@@ -333,12 +316,8 @@ H2_total <- ggplot(H2) +
         panel.grid.major.y = element_line(colour = "white", linetype = 1, linewidth = 0.5),
         panel.grid.minor.y = element_blank(),
         panel.spacing = unit(0.5, "lines"), 
-        text=element_text(family="EB Garamond"),
-        legend.position = "none",
-        plot.tag.position=c(0.62,0.94),
-        plot.tag = element_text(hjust = 0.5)) + 
-  ylab('genome altered (%)') +
-  labs(tag='TOTAL')
+        legend.position = "none") + 
+  ylab('genome\naltered (%)') 
 
 H3 <- subset(cnv_data, (env == "NaCl" | env == "Ethanol" | env =='H3F1' | env =='H3F2'))
 H3$env <- factor(H3$env , levels=c('NaCl','Ethanol','H3F1','H3F2'))
@@ -360,14 +339,12 @@ H3_plot <- ggplot(H3) +
         panel.grid.major.y =  element_line(colour = "lightgrey", linetype = 1, linewidth = 0.5),
         panel.grid.minor.y = element_blank(),
         panel.spacing = unit(0.5, "lines"),
-        text=element_text(family="EB Garamond"),
         legend.spacing.y = unit(-0.35, 'cm'))+
   guides(fill = guide_legend(byrow = TRUE))
 
 H3_total <- ggplot(H3) + 
   geom_hline(yintercept=(mean(founder$total)),color='black',linetype='dashed',linewidth=0.5)+
-  stat_summary(aes(x=as.factor(env),y=total,color=env),fun=median, geom="point", shape=95, size=12,stroke=edgewidth,alpha=1)+
-  geom_jitter(aes(x=as.factor(env),y=total,fill=env),shape=21, colour='black',size=markersize, alpha=alpha,width=width,stroke=edgewidth) +
+  geom_boxplot(aes(x=as.factor(env),y=total,fill=env)) +
   scale_fill_manual(values=c(NaCl,Ethanol,F1,F2),name ='',labels = c("NaCl", "Ethanol", "Hybrid F1",'Hybrid F2'))+
   scale_color_manual(values=c(NaCl,Ethanol,F1,F2),name ='',labels = c("NaCl", "Ethanol", "Hybrid F1",'Hybrid F2'))+
   theme(axis.title.x=element_blank(), 
@@ -379,18 +356,36 @@ H3_total <- ggplot(H3) +
         panel.grid.major.y = element_line(colour = "white", linetype = 1, linewidth = 0.5),
         panel.grid.minor.y = element_blank(),
         panel.spacing = unit(0.5, "lines"), 
-        text=element_text(family="EB Garamond"),
-        legend.position = "none",
-        plot.tag.position=c(0.62,0.94),
-        plot.tag = element_text(hjust = 0.5)) + 
-  ylab('genome altered (%)') +
-  labs(tag='TOTAL')
+        legend.position = "none") + 
+  ylab('genome\naltered (%)') 
 
 H1_total + H1_plot + H2_total + H2_plot + H3_total + H3_plot + 
   plot_layout(ncol=2,widths = c(1.3,8))
 
-ggsave('figures/Hybrid_Dynamics_GIN.pdf',width=11,height=5,dpi = 900)
+ggsave('figures/Hybrid_Dynamics_GIN.pdf',width=8,height=4,dpi = 900)
 
+# ==============================================================================
+# Pairwise Kruskal-Wallis
+# ==============================================================================
+kruskal.test(total ~ env, data = H1)
+pairwise.wilcox.test(H1$total, H1$env,
+                     p.adjust.method = "BH")
+kruskal.test(total ~ env, data = H2)
+pairwise.wilcox.test(H2$total, H2$env,
+                     p.adjust.method = "BH")
+kruskal.test(total ~ env, data = H3)
+pairwise.wilcox.test(H3$total, H3$env,
+                     p.adjust.method = "BH")
+
+H1 %>%
+  group_by(env) %>%
+  summarise(mean=mean(total),n = n())
+H2 %>%
+  group_by(env) %>%
+  summarise(mean=mean(total),n = n())
+H3 %>%
+  group_by(env) %>%
+  summarise(mean=mean(total),n = n())
 # ==============================================================================
 # ANOVA of CNV 
 # ==============================================================================
@@ -431,7 +426,6 @@ p_H1 <- ggplot(H1, aes(x = env, y = total,fill=env))+
   geom_line(aes(group=gen_rep))+
   geom_point(shape=21,fill='white')+
   theme(panel.background = element_rect(fill = "white"),
-        text=element_text(family="EB Garamond"),
         plot.margin = margin(0.1, 0.1, 0.1, 0.1, "cm"),
         axis.title.x=element_blank(),
         panel.grid.major.x = element_blank(),
@@ -452,7 +446,6 @@ p_H2 <- ggplot(H2, aes(x = env, y = total,fill=env))+
   geom_line(aes(group=gen_rep))+
   geom_point(shape=21,fill='white')+
   theme(panel.background = element_rect(fill = "white"),
-        text=element_text(family="EB Garamond"),
         plot.margin = margin(0.1, 0.1, 0.1, 0.1, "cm"),
         axis.title.x=element_blank(),
         axis.title.y=element_blank(),
@@ -475,7 +468,6 @@ p_H3 <- ggplot(H3, aes(x = env, y = total,fill=env))+
   geom_line(aes(group=gen_rep))+
   geom_point(shape=21,fill='white')+
   theme(panel.background = element_rect(fill = "white"),
-        text=element_text(family="EB Garamond"),
         plot.margin = margin(0.1, 0.1, 0.1, 0.1, "cm"),
         axis.title.x=element_blank(),
         axis.title.y=element_blank(),

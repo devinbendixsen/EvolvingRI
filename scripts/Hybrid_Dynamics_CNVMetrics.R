@@ -16,6 +16,7 @@
 # LOAD NEEDED MODULES
 # ==============================================================================
 library(GenomicRanges)
+BiocManager::install("CNVMetrics")
 library(CNVMetrics)
 library(dplyr)
 library(showtext)
@@ -139,9 +140,9 @@ H1_amp$env[H1_amp$dist<=100]='within'
 
 H1_amp <- subset(H1_amp,p1gen==p2gen)
 H1_amp$dist <- H1_amp$p1_gen_num
-H1_amp$dist <- as.factor(H1_amp$dist)
+#H1_amp$dist <- as.factor(H1_amp$dist)
 
-H1_amp$env_final <- ifelse(H1_amp$env=='within' & H1_amp$p1env == 'NaCl','NaCl',ifelse(H1_amp$env=='within' & H1_amp$p1env == 'LiAc0.01','LiAc0.01','divergent'))
+H1_amp$env_final <- ifelse(H1_amp$env=='within' & H1_amp$p1env == 'NaCl','NaCl',ifelse(H1_amp$env=='within' & H1_amp$p1env == 'LiAc0.01','LiAc0.01','Divergent'))
 
 
 H1_overall<- ggplot(H1_amp, aes(x=env_final, metric)) +
@@ -157,9 +158,8 @@ H1_overall<- ggplot(H1_amp, aes(x=env_final, metric)) +
     panel.grid.minor.y = element_blank(),
     panel.spacing = unit(0.5, "lines"), 
     axis.title.x=element_blank(),
-    text=element_text(family="EB Garamond"),
     legend.position = "bottom",
-    axis.text.x = element_text(angle = 60, vjust = 1, hjust=1))+
+    axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+
   labs(y='Jaccard similarity')+
   guides(fill=guide_legend(title="Environment"))+
   ylim(0,0.82)
@@ -181,10 +181,9 @@ H1_scatter<- ggplot(H1_amp, aes(x=dist, metric)) +
     axis.text.y=element_blank(),
     axis.title.y=element_blank(),
     panel.spacing = unit(0.5, "lines"), 
-    text=element_text(family="EB Garamond"),
     legend.position = "bottom",
-    axis.text.x = element_text(angle = 60, vjust = 1, hjust=1))+
-  labs(x='generations')+
+    axis.text.x = element_text())+
+  labs(x='Generations')+
   guides(fill=guide_legend(title="Environment"))+
   ylim(0,0.82)
 
@@ -216,9 +215,9 @@ H2_amp$env[H2_amp$dist<=100]='within'
 
 H2_amp <- subset(H2_amp,p1gen==p2gen)
 H2_amp$dist <- H2_amp$p1_gen_num
-H2_amp$dist <- as.factor(H2_amp$dist)
+#H2_amp$dist <- as.factor(H2_amp$dist)
 
-H2_amp$env_final <- ifelse(H2_amp$env=='within' & H2_amp$p1env == 'NaCl','NaCl',ifelse(H2_amp$env=='within' & H2_amp$p1env == 'LiAc0.02','LiAc0.02','divergent'))
+H2_amp$env_final <- ifelse(H2_amp$env=='within' & H2_amp$p1env == 'NaCl','NaCl',ifelse(H2_amp$env=='within' & H2_amp$p1env == 'LiAc0.02','LiAc0.02','Divergent'))
 
 
 H2_overall<- ggplot(H2_amp, aes(x=env_final, metric)) +
@@ -235,9 +234,8 @@ H2_overall<- ggplot(H2_amp, aes(x=env_final, metric)) +
     panel.spacing = unit(0.5, "lines"), 
     axis.title.y=element_blank(),
     axis.title.x=element_blank(),
-    text=element_text(family="EB Garamond"),
     legend.position = "bottom",
-    axis.text.x = element_text(angle = 60, vjust = 1, hjust=1))+
+    axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+
   guides(fill=guide_legend(title="Environment"))+
   ylim(0,0.82)
 
@@ -258,10 +256,9 @@ H2_scatter<- ggplot(H2_amp, aes(x=dist, metric)) +
     axis.text.y=element_blank(),
     axis.title.y=element_blank(),
     panel.spacing = unit(0.5, "lines"), 
-    text=element_text(family="EB Garamond"),
     legend.position = "bottom",
-    axis.text.x = element_text(angle = 60, vjust = 1, hjust=1))+
-  labs(x='generations')+
+    axis.text.x = element_text())+
+  labs(x='Generations')+
   guides(fill=guide_legend(title="Environment"))+
   ylim(0,0.82)
 
@@ -293,10 +290,10 @@ H3_amp$env[H3_amp$dist<=100]='within'
 
 H3_amp <- subset(H3_amp,p1gen==p2gen)
 H3_amp$dist <- H3_amp$p1_gen_num
-H3_amp$dist <- as.factor(H3_amp$dist)
+#H3_amp$dist <- as.factor(H3_amp$dist)
 
 
-H3_amp$env_final <- ifelse(H3_amp$env=='within' & H3_amp$p1env == 'NaCl','NaCl',ifelse(H3_amp$env=='within' & H3_amp$p1env == 'Ethanol','Ethanol','divergent'))
+H3_amp$env_final <- ifelse(H3_amp$env=='within' & H3_amp$p1env == 'NaCl','NaCl',ifelse(H3_amp$env=='within' & H3_amp$p1env == 'Ethanol','Ethanol','Divergent'))
 
 
 H3_overall<- ggplot(H3_amp, aes(x=env_final, metric)) +
@@ -313,9 +310,8 @@ H3_overall<- ggplot(H3_amp, aes(x=env_final, metric)) +
     panel.spacing = unit(0.5, "lines"), 
     axis.title.y=element_blank(),
     axis.title.x=element_blank(),
-    text=element_text(family="EB Garamond"),
     legend.position = "bottom",
-    axis.text.x = element_text(angle = 60, vjust = 1, hjust=1))+
+    axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+
   guides(fill=guide_legend(title="Environment"))+
   ylim(0,0.82)
 
@@ -336,18 +332,30 @@ H3_scatter<- ggplot(H3_amp, aes(x=dist, metric)) +
     axis.text.y=element_blank(),
     axis.title.y=element_blank(),
     panel.spacing = unit(0.5, "lines"), 
-    text=element_text(family="EB Garamond"),
     legend.position = "bottom",
-    axis.text.x = element_text(angle = 60, vjust = 1, hjust=1))+
-  labs(x='generations')+
+    axis.text.x = element_text())+
+  labs(x='Generations')+
   guides(fill=guide_legend(title="Environment"))+
   ylim(0,0.82)
 
 H1_overall + H1_scatter +H2_overall + H2_scatter +H3_overall + H3_scatter +
-  plot_layout(widths=c(1.5,5,1.5,5,1.5,5)) 
+  plot_layout(widths=c(2,5,2,5,2,5)) 
 
-ggsave('figures/Hybrid_Dynamics_Jaccard-gen.pdf',width=10,height=2.5,dpi = 900)
+ggsave('figures/Hybrid_Dynamics_Jaccard-gen.pdf',width=7.5,height=2,dpi = 900)
 
+
+# ==============================================================================
+# Pairwise Kruskal-Wallis
+# ==============================================================================
+kruskal.test(metric ~ env_final, data = H1_amp)
+pairwise.wilcox.test(H1_amp$metric, H1_amp$env_final,
+                     p.adjust.method = "BH")
+kruskal.test(metric ~ env_final, data = H2_amp)
+pairwise.wilcox.test(H2_amp$metric, H2_amp$env_final,
+                     p.adjust.method = "BH")
+kruskal.test(metric ~ env_final, data = H3_amp)
+pairwise.wilcox.test(H3_amp$metric, H3_amp$env_final,
+                     p.adjust.method = "BH")
 # ==============================================================================
 # 
 # ==============================================================================

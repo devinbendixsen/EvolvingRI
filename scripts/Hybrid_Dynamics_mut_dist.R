@@ -19,11 +19,9 @@ library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(patchwork)
-library(showtext)
 library(tibble)
 library(stringr)
-font_add_google("EB Garamond")
-showtext_auto()
+
 
 genome_size=12071326
 chr_data <- data.frame(chr=c('I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI'),size=c(230218,	813184,	316620,	1531933,	576874,	270161,	1090940,	562643,	439888,	745751,	666816,	1078177,	924431,	784333,	1091291,	948066))
@@ -202,11 +200,10 @@ p_SNV<- ggplot(snv_mean, aes(x=chr, y=env)) +
   scale_fill_gradient(low='white',high='#136B6B',,
                       guide = guide_colorbar(frame.colour = "black", ticks.colour = "black",barwidth=5,barheight=1,title = 'SNV (muts/kb)',title.position='top'))+
   theme(panel.background = element_rect(fill = "white"),
-        text=element_text(family="EB Garamond"),
         plot.margin = margin(0.1, 0.1, 0.1, 0.1, "cm"),
         legend.position = "bottom",
         axis.title.y=element_blank()) +
-  xlab('chromosomes') + 
+  xlab('Chromosomes') + 
   scale_y_discrete(breaks=rev(c('N','LE','NaCl','LiAc0.01','LiAc0.02','Ethanol','H1F1','H1F2','H2F1','H2F2','H3F1','H3F2')),
                    labels=rev(c('N Founder','LE Founder','NaCl','LiAc 0.01','LiAc 0.02','Ethanol','NaCl x LiAc 0.01 F1','NaCl x LiAc 0.01 F2','NaCl x LiAc 0.02 F1','NaCl x LiAc 0.02 F2','NaCl x EtOH F1','NaCl x EtOH F2')))
 
@@ -214,7 +211,6 @@ p_SNV_right <- ggplot(snv_mean, aes(y = env, x = mean_snv,fill=env)) +
   geom_boxplot(color='black') +
   scale_fill_manual(values=rev(c("white", "white",'#4472c4ff','#9e49e1ff','#00b050ff','#ff0000ff','#808080','#d4a373','#808080','#d4a373','#808080','#d4a373')))+
   theme(panel.background = element_rect(fill = 'lightgrey'),
-        text=element_text(family="EB Garamond"),
         plot.margin = margin(0.1, 0.1, 0.1, 0.1, "cm"),
         legend.position = "none",
         axis.text.y=element_blank(),
@@ -225,7 +221,6 @@ p_SNV_right <- ggplot(snv_mean, aes(y = env, x = mean_snv,fill=env)) +
 p_SNV_top <- ggplot(snv_mean, aes(y = mean_snv, x = chr)) +
   geom_boxplot(color='black',fill='white') +
   theme(panel.background = element_rect(fill = 'lightgrey'),
-        text=element_text(family="EB Garamond"),
         plot.margin = margin(0.1, 0.1, 0.1, 0.1, "cm"),
         legend.position = "none",
         axis.text.x=element_blank(),
@@ -234,7 +229,7 @@ p_SNV_top <- ggplot(snv_mean, aes(y = mean_snv, x = chr)) +
   scale_y_continuous(minor_breaks = NULL) 
 
 
-p_SNV_total <- p_SNV_top + guide_area() + p_SNV + p_SNV_right + plot_layout(heights=c(1,3),widths=c(6,1),guides='collect')
+p_SNV_total <- p_SNV_top + guide_area() + p_SNV + p_SNV_right + plot_layout(heights=c(1,3),widths=c(6,2),guides='collect')
 #ggsave('figures/Hybrid_Dynamics_SNV_dist.pdf',width=10,height=3,dpi = 900)
 
 # ==============================================================================
@@ -257,11 +252,10 @@ p_SV<- ggplot(sv_mean, aes(x=chr, y=env)) +
   scale_fill_gradient(low='white',high='#871F1F',,
                       guide = guide_colorbar(frame.colour = "black", ticks.colour = "black",barwidth=5,barheight=1,title = 'SV (muts/kb)',title.position='top'))+
   theme(panel.background = element_rect(fill = "white"),
-        text=element_text(family="EB Garamond"),
         plot.margin = margin(0.1, 0.1, 0.1, 0.1, "cm"),
         legend.position = "bottom",
         axis.title.y=element_blank()) +
-  xlab('chromosomes') + 
+  xlab('Chromosomes') + 
   scale_y_discrete(breaks=rev(c('N','LE','NaCl','LiAc0.01','LiAc0.02','Ethanol','H1F1','H1F2','H2F1','H2F2','H3F1','H3F2')),
                    labels=rev(c('N Founder','LE Founder','NaCl','LiAc 0.01','LiAc 0.02','Ethanol','NaCl x LiAc 0.01 F1','NaCl x LiAc 0.01 F2','NaCl x LiAc 0.02 F1','NaCl x LiAc 0.02 F2','NaCl x EtOH F1','NaCl x EtOH F2')))
 
@@ -269,7 +263,6 @@ p_SV_right <- ggplot(sv_mean, aes(y = env, x = mean_sv,fill=env)) +
   geom_boxplot(color='black') +
   scale_fill_manual(values=rev(c("white", "white",'#4472c4ff','#9e49e1ff','#00b050ff','#ff0000ff','#808080','#d4a373','#808080','#d4a373','#808080','#d4a373')))+
   theme(panel.background = element_rect(fill = 'lightgrey'),
-        text=element_text(family="EB Garamond"),
         plot.margin = margin(0.1, 0.1, 0.1, 0.1, "cm"),
         legend.position = "none",
         axis.text.y=element_blank(),
@@ -280,7 +273,6 @@ p_SV_right <- ggplot(sv_mean, aes(y = env, x = mean_sv,fill=env)) +
 p_SV_top <- ggplot(sv_mean, aes(y = mean_sv, x = chr)) +
   geom_boxplot(color='black',fill='white') +
   theme(panel.background = element_rect(fill = 'lightgrey'),
-        text=element_text(family="EB Garamond"),
         plot.margin = margin(0.1, 0.1, 0.1, 0.1, "cm"),
         legend.position = "none",
         axis.text.x=element_blank(),
@@ -288,7 +280,7 @@ p_SV_top <- ggplot(sv_mean, aes(y = mean_sv, x = chr)) +
   ylab('SV load')+
   scale_y_continuous(minor_breaks = NULL) 
 
-p_SV_total <- p_SV_top +guide_area() + p_SV + p_SV_right + plot_layout(heights=c(1,3),widths=c(6,1),guides='collect')
+p_SV_total <- p_SV_top +guide_area() + p_SV + p_SV_right + plot_layout(heights=c(1,3),widths=c(6,2),guides='collect')
 #ggsave('figures/Hybrid_Dynamics_SV_dist.pdf',width=10,height=3,dpi = 900)
 
 
@@ -312,11 +304,10 @@ p_CNV<- ggplot(cnv_mean, aes(x=chr, y=env)) +
   scale_fill_gradient(low='white',high='#23395d',
                       guide = guide_colorbar(frame.colour = "black", ticks.colour = "black",barwidth=5,barheight=1,title = 'CNV (%)',title.position='top'))+
   theme(panel.background = element_rect(fill = "white"),
-        text=element_text(family="EB Garamond"),
         plot.margin = margin(0.1, 0.1, 0.1, 0.1, "cm"),
         legend.position = "bottom",
         axis.title.y=element_blank()) +
-  xlab('chromosomes') + 
+  xlab('Chromosomes') + 
   scale_y_discrete(breaks=rev(c('N','LE','NaCl','LiAc0.01','LiAc0.02','Ethanol','H1F1','H1F2','H2F1','H2F2','H3F1','H3F2')),
                    labels=rev(c('N Founder','LE Founder','NaCl','LiAc 0.01','LiAc 0.02','Ethanol','NaCl x LiAc 0.01 F1','NaCl x LiAc 0.01 F2','NaCl x LiAc 0.02 F1','NaCl x LiAc 0.02 F2','NaCl x EtOH F1','NaCl x EtOH F2')))
 
@@ -325,7 +316,6 @@ p_CNV_right <- ggplot(cnv_mean, aes(y = env, x = mean_cnv,fill = env)) +
   geom_boxplot(color='black') +
   scale_fill_manual(values=rev(c("white", "white",'#4472c4ff','#9e49e1ff','#00b050ff','#ff0000ff','#808080','#d4a373','#808080','#d4a373','#808080','#d4a373')))+
   theme(panel.background = element_rect(fill = 'lightgrey'),
-        text=element_text(family="EB Garamond"),
         plot.margin = margin(0.1, 0.1, 0.1, 0.1, "cm"),
         legend.position = "none",
         axis.text.y=element_blank(),
@@ -336,7 +326,6 @@ p_CNV_right <- ggplot(cnv_mean, aes(y = env, x = mean_cnv,fill = env)) +
 p_CNV_top <- ggplot(cnv_mean, aes(y = mean_cnv, x = chr)) +
   geom_boxplot(color='black',fill='white') +
   theme(panel.background = element_rect(fill = 'lightgrey'),
-        text=element_text(family="EB Garamond"),
         plot.margin = margin(0.1, 0.1, 0.1, 0.1, "cm"),
         legend.position = "top",
         axis.text.x=element_blank(),
@@ -344,11 +333,11 @@ p_CNV_top <- ggplot(cnv_mean, aes(y = mean_cnv, x = chr)) +
   ylab('CNV (%)') +
   scale_y_continuous(minor_breaks = NULL)
 
-p_CNV_total <- p_CNV_top + guide_area() + p_CNV + p_CNV_right + plot_layout(heights=c(1,3),widths=c(6,1),guides='collect')
+p_CNV_total <- p_CNV_top + guide_area() + p_CNV + p_CNV_right + plot_layout(heights=c(1,3),widths=c(6,2),guides='collect')
 #ggsave('figures/Hybrid_Dynamics_CNV_dist.pdf',width=10,height=3,dpi = 900)
 
 p_SNV_total/p_SV_total/p_CNV_total
-ggsave('figures/Hybrid_Dynamics_mut_dist_SNV_SV_CNV.pdf',width=10,height=8,dpi = 900)
+ggsave('figures/Hybrid_Dynamics_mut_dist_SNV_SV_CNV.pdf',width=8,height=8,dpi = 900)
 
 
 # ==============================================================================
@@ -358,58 +347,43 @@ ggsave('figures/Hybrid_Dynamics_mut_dist_SNV_SV_CNV.pdf',width=10,height=8,dpi =
 snv_mean %>%
   dplyr::group_by(chr) %>% 
   dplyr::summarise(mean = mean(mean_snv))
-res_aov <- aov(mean_snv ~ env,
-               data = snv_mean)
-summary(res_aov)
-post_test <- glht(res_aov,
-                  linfct = mcp(env = "Tukey"))
-summary(post_test)
-plot(post_test)
 
-res_aov <- aov(mean_snv ~ chr,
-               data = snv_mean)
-summary(res_aov)
-post_test <- glht(res_aov,
-                  linfct = mcp(chr = "Tukey"))
-summary(post_test)
-plot(post_test)
+kruskal.test(mean_snv ~ env, data = snv_mean)
+pairwise.wilcox.test(snv_mean$mean_snv, snv_mean$env,
+                     p.adjust.method = "BH")
+
+kruskal.test(mean_snv ~ chr, data = snv_mean)
+pairwise.wilcox.test(snv_mean$mean_snv, snv_mean$chr,
+                     p.adjust.method = "BH")
+
 
 #SV stats
 sv_mean %>%
   dplyr::group_by(chr) %>% 
   dplyr::summarise(mean = mean(mean_sv))
-res_aov <- aov(mean_sv ~ env,
-               data = sv_mean)
-summary(res_aov)
-post_test <- glht(res_aov,
-                  linfct = mcp(env = "Tukey"))
-summary(post_test)
-plot(post_test)
 
-res_aov <- aov(mean_sv ~ chr,
-               data = sv_mean)
-summary(res_aov)
-post_test <- glht(res_aov,
-                  linfct = mcp(chr = "Tukey"))
-summary(post_test)
-plot(post_test)
+kruskal.test(mean_sv ~ env, data = sv_mean)
+pairwise.wilcox.test(sv_mean$mean_sv, sv_mean$env,
+                     p.adjust.method = "BH")
+
+kruskal.test(mean_sv ~ chr, data = sv_mean)
+pairwise.wilcox.test(sv_mean$mean_sv, sv_mean$chr,
+                     p.adjust.method = "BH")
+
+
 
 #CNV stats
+cnv_mean %>% 
+  dplyr::group_by(env) %>% 
+  dplyr::summarise(mean = mean(mean_cnv))
 cnv_mean %>%
   dplyr::group_by(chr) %>% 
   dplyr::summarise(mean = mean(mean_cnv))
-res_aov <- aov(mean_sv ~ env,
-               data = sv_mean)
-summary(res_aov)
-post_test <- glht(res_aov,
-                  linfct = mcp(env = "Tukey"))
-summary(post_test)
-plot(post_test)
 
-res_aov <- aov(mean_sv ~ chr,
-               data = sv_mean)
-summary(res_aov)
-post_test <- glht(res_aov,
-                  linfct = mcp(chr = "Tukey"))
-summary(post_test)
-plot(post_test)
+kruskal.test(mean_cnv ~ env, data = cnv_mean)
+pairwise.wilcox.test(cnv_mean$mean_cnv, cnv_mean$env,
+                     p.adjust.method = "BH")
+
+kruskal.test(mean_cnv ~ chr, data = cnv_mean)
+pairwise.wilcox.test(cnv_mean$mean_cnv, cnv_mean$chr,
+                     p.adjust.method = "BH")

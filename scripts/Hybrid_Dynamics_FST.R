@@ -57,15 +57,15 @@ fst$p1_gen_num <- as.factor(fst$p1_gen_num)
 
 H1_fst <- dplyr::filter(fst, grepl(paste(c('NaCl','LiAc0.01'),collapse="|"), p1env))
 H1_fst <- dplyr::filter(H1_fst, grepl(paste(c('NaCl','LiAc0.01'),collapse="|"), p2env))
-H1_fst$env_final <- ifelse(H1_fst$env=='within' & H1_fst$p1env == 'NaCl','NaCl',ifelse(H1_fst$env=='within' & H1_fst$p1env == 'LiAc0.01','LiAc0.01','divergent'))
+H1_fst$env_final <- ifelse(H1_fst$env=='within' & H1_fst$p1env == 'NaCl','NaCl',ifelse(H1_fst$env=='within' & H1_fst$p1env == 'LiAc0.01','LiAc0.01','Divergent'))
 
 H2_fst <- dplyr::filter(fst, grepl(paste(c('NaCl','LiAc0.02'),collapse="|"), p1env))
 H2_fst <- dplyr::filter(H2_fst, grepl(paste(c('NaCl','LiAc0.02'),collapse="|"), p2env))
-H2_fst$env_final <- ifelse(H2_fst$env=='within' & H2_fst$p1env == 'NaCl','NaCl',ifelse(H2_fst$env=='within' & H2_fst$p1env == 'LiAc0.02','LiAc0.02','divergent'))
+H2_fst$env_final <- ifelse(H2_fst$env=='within' & H2_fst$p1env == 'NaCl','NaCl',ifelse(H2_fst$env=='within' & H2_fst$p1env == 'LiAc0.02','LiAc0.02','Divergent'))
 
 H3_fst <- dplyr::filter(fst, grepl(paste(c('NaCl','Ethanol'),collapse="|"), p1env))
 H3_fst <- dplyr::filter(H3_fst, grepl(paste(c('NaCl','Ethanol'),collapse="|"), p2env))
-H3_fst$env_final <- ifelse(H3_fst$env=='within' & H3_fst$p1env == 'NaCl','NaCl',ifelse(H3_fst$env=='within' & H3_fst$p1env == 'Ethanol','Ethanol','divergent'))
+H3_fst$env_final <- ifelse(H3_fst$env=='within' & H3_fst$p1env == 'NaCl','NaCl',ifelse(H3_fst$env=='within' & H3_fst$p1env == 'Ethanol','Ethanol','Divergent'))
 
 
 # ==============================================================================
@@ -94,19 +94,18 @@ H1_overall<- ggplot(H1_fst, aes(x=env_final, Fst.Estimate)) +
     panel.grid.minor.y = element_blank(),
     panel.spacing = unit(0.5, "lines"), 
     axis.title.x=element_blank(),
-    text=element_text(family="EB Garamond"),
     legend.position = "bottom",
-    axis.text.x = element_text(angle = 60, vjust = 1, hjust=1))+
+    axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+
   labs(y='Fst Estimate')+
   guides(fill=guide_legend(title="Environment"))+
   ylim(0,0.51)
 
-H1_scatter<- ggplot(H1_fst, aes(x=p1_gen_num, metric)) +
+H1_scatter<- ggplot(H1_fst, aes(x=p2_gen_num, metric)) +
   geom_hline(yintercept=0.01770595, linetype="dashed",  
              color = "black", size=0.5) + 
   stat_summary(aes(y=Fst.Estimate, group=env_final,color=env_final),fun=mean, geom="line",alpha=1,,show.legend=FALSE)+
-  stat_summary(aes(x=p1_gen_num,y=Fst.Estimate,group=env_final),fun.data = mean_se,  geom = "errorbar",width=0,show.legend=FALSE) + 
-  stat_summary(aes(x=p1_gen_num,y=Fst.Estimate,fill=env_final),fun=mean, geom="point", shape=21, size=2,stroke=0.7,alpha=1,show.legend=FALSE)+
+  stat_summary(aes(x=p2_gen_num,y=Fst.Estimate,group=env_final),fun.data = mean_se,  geom = "errorbar",width=0,show.legend=FALSE) + 
+  stat_summary(aes(x=p2_gen_num,y=Fst.Estimate,fill=env_final),fun=mean, geom="point", shape=21, size=2,stroke=0.7,alpha=1,show.legend=FALSE)+
   scale_fill_manual(values=c('dimgrey',LiAc0.01,NaCl))+
   scale_colour_manual(values=c('dimgrey',LiAc0.01,NaCl))+
   theme(
@@ -118,10 +117,9 @@ H1_scatter<- ggplot(H1_fst, aes(x=p1_gen_num, metric)) +
     axis.text.y=element_blank(),
     axis.title.y=element_blank(),
     panel.spacing = unit(0.5, "lines"), 
-    text=element_text(family="EB Garamond"),
     legend.position = "bottom",
-    axis.text.x = element_text(angle = 60, vjust = 1, hjust=1))+
-  labs(x='generations')+
+    axis.text.x = element_text())+
+  labs(x='Generations')+
   guides(fill=guide_legend(title="Environment"))+
   ylim(0,0.51)
 
@@ -140,18 +138,17 @@ H2_overall<- ggplot(H2_fst, aes(x=env_final, Fst.Estimate)) +
     panel.spacing = unit(0.5, "lines"), 
     axis.title.x=element_blank(),
     axis.title.y=element_blank(),
-    text=element_text(family="EB Garamond"),
     legend.position = "bottom",
-    axis.text.x = element_text(angle = 60, vjust = 1, hjust=1))+
+    axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+
   guides(fill=guide_legend(title="Environment"))+
   ylim(0,0.51)
 
-H2_scatter<- ggplot(H2_fst, aes(x=p1_gen_num, metric)) +
+H2_scatter<- ggplot(H2_fst, aes(x=p2_gen_num, metric)) +
   geom_hline(yintercept=0.01770595, linetype="dashed", 
              color = "black", size=0.5) + 
   stat_summary(aes(y=Fst.Estimate, group=env_final,color=env_final),fun=mean, geom="line",alpha=1,,show.legend=FALSE)+
-  stat_summary(aes(x=p1_gen_num,y=Fst.Estimate,group=env_final),fun.data = mean_se,  geom = "errorbar",width=0,show.legend=FALSE) + 
-  stat_summary(aes(x=p1_gen_num,y=Fst.Estimate,fill=env_final),fun=mean, geom="point", shape=21, size=2,stroke=0.7,alpha=1,show.legend=FALSE)+
+  stat_summary(aes(x=p2_gen_num,y=Fst.Estimate,group=env_final),fun.data = mean_se,  geom = "errorbar",width=0,show.legend=FALSE) + 
+  stat_summary(aes(x=p2_gen_num,y=Fst.Estimate,fill=env_final),fun=mean, geom="point", shape=21, size=2,stroke=0.7,alpha=1,show.legend=FALSE)+
   scale_fill_manual(values=c('dimgrey',LiAc0.02,NaCl))+
   scale_colour_manual(values=c('dimgrey',LiAc0.02,NaCl))+
   theme(
@@ -163,10 +160,9 @@ H2_scatter<- ggplot(H2_fst, aes(x=p1_gen_num, metric)) +
     axis.text.y=element_blank(),
     axis.title.y=element_blank(),
     panel.spacing = unit(0.5, "lines"), 
-    text=element_text(family="EB Garamond"),
     legend.position = "bottom",
-    axis.text.x = element_text(angle = 60, vjust = 1, hjust=1))+
-  labs(x='generations')+
+    axis.text.x = element_text())+
+  labs(x='Generations')+
   guides(fill=guide_legend(title="Environment"))+
   ylim(0,0.51)
 
@@ -185,18 +181,17 @@ H3_overall<- ggplot(H3_fst, aes(x=env_final, Fst.Estimate)) +
     panel.spacing = unit(0.5, "lines"), 
     axis.title.x=element_blank(),
     axis.title.y=element_blank(),
-    text=element_text(family="EB Garamond"),
     legend.position = "bottom",
-    axis.text.x = element_text(angle = 60, vjust = 1, hjust=1))+
+    axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+
   guides(fill=guide_legend(title="Environment"))+
   ylim(0,0.51)
 
-H3_scatter<- ggplot(H3_fst, aes(x=p1_gen_num, metric)) +
+H3_scatter<- ggplot(H3_fst, aes(x=p2_gen_num, metric)) +
   geom_hline(yintercept=0.01770595, linetype="dashed", 
              color = "black", size=0.5) + 
   stat_summary(aes(y=Fst.Estimate, group=env_final,color=env_final),fun=mean, geom="line",alpha=1,,show.legend=FALSE)+
-  stat_summary(aes(x=p1_gen_num,y=Fst.Estimate,group=env_final),fun.data = mean_se,  geom = "errorbar",width=0,show.legend=FALSE) + 
-  stat_summary(aes(x=p1_gen_num,y=Fst.Estimate,fill=env_final),fun=mean, geom="point", shape=21, size=2,stroke=0.7,alpha=1,show.legend=FALSE)+
+  stat_summary(aes(x=p2_gen_num,y=Fst.Estimate,group=env_final),fun.data = mean_se,  geom = "errorbar",width=0,show.legend=FALSE) + 
+  stat_summary(aes(x=p2_gen_num,y=Fst.Estimate,fill=env_final),fun=mean, geom="point", shape=21, size=2,stroke=0.7,alpha=1,show.legend=FALSE)+
   scale_fill_manual(values=c('dimgrey',Ethanol,NaCl))+
   scale_colour_manual(values=c('dimgrey',Ethanol,NaCl))+
   theme(
@@ -208,19 +203,31 @@ H3_scatter<- ggplot(H3_fst, aes(x=p1_gen_num, metric)) +
     axis.text.y=element_blank(),
     axis.title.y=element_blank(),
     panel.spacing = unit(0.5, "lines"), 
-    text=element_text(family="EB Garamond"),
     legend.position = "bottom",
-    axis.text.x = element_text(angle = 60, vjust = 1, hjust=1))+
-  labs(x='generations')+
+    axis.text.x = element_text())+
+  labs(x='Generations')+
   guides(fill=guide_legend(title="Environment"))+
   ylim(0,0.51)
 
 
 H1_overall + H1_scatter +H2_overall + H2_scatter +H3_overall + H3_scatter +
-  plot_layout(widths=c(1.5,5,1.5,5,1.5,5)) 
+  plot_layout(widths=c(2,5,2,5,2,5)) 
 
-ggsave('figures/Hybrid_Dynamics_Fst-gen.pdf',width=10,height=2.5,dpi = 900)
+ggsave('figures/Hybrid_Dynamics_Fst-gen.pdf',width=7.5,height=2,dpi = 900)
 
+
+# ==============================================================================
+# Pairwise Kruskal-Wallis
+# ==============================================================================
+kruskal.test(Fst.Estimate ~ env_final, data = H1_fst)
+pairwise.wilcox.test(H1_fst$Fst.Estimate, H1_fst$env_final,
+                     p.adjust.method = "BH")
+kruskal.test(Fst.Estimate ~ env_final, data = H2_fst)
+pairwise.wilcox.test(H2_fst$Fst.Estimate, H2_fst$env_final,
+                     p.adjust.method = "BH")
+kruskal.test(Fst.Estimate ~ env_final, data = H3_fst)
+pairwise.wilcox.test(H3_fst$Fst.Estimate, H3_fst$env_final,
+                     p.adjust.method = "BH")
 # ==============================================================================
 # 
 # ==============================================================================
@@ -232,6 +239,9 @@ summary(res_aov)
 post_test <- glht(res_aov,
                   linfct = mcp(env_final = "Tukey"))
 summary(post_test)
+
+
+
 
 H2_fst$env_final <- as.factor(H2_fst$env_final)
 res_aov <- aov(Fst.Estimate ~ env_final,

@@ -32,7 +32,7 @@ H1_plot <- ggplot(H1_fst, aes(P2, P1, fill= Fst.Estimate)) +
         legend.position = "bottom")+
   scale_fill_distiller(palette = "YlGnBu")+
   labs(title='NaCl x LiAc 0.01', x='', y='')
-
+H1_plot
 # ==============================================================================
 # 
 # ==============================================================================

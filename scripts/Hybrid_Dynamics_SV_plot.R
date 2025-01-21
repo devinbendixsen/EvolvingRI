@@ -21,10 +21,7 @@ library(ggplot2)
 library(patchwork)
 library(vcfR)
 library(stringr)
-library(showtext)
-font_add_google("EB Garamond")
-showtext_auto()
-quartz()
+
 # ==============================================================================
 # 
 # ==============================================================================
@@ -106,14 +103,12 @@ H1_plot <- ggplot(H1) +
         panel.grid.major.y =  element_line(colour = "lightgrey", linetype = 1, linewidth = 0.5),
         panel.grid.minor.y = element_blank(),
         panel.spacing = unit(0.5, "lines"),
-        text=element_text(family="EB Garamond"),
         legend.spacing.y = unit(-0.35, 'cm'))+
   guides(fill = guide_legend(byrow = TRUE))
 
 H1_total <- ggplot(H1) + 
   geom_hline(yintercept=(mean(founder$tot_burden)),color='black',linetype='dashed',linewidth=0.7)+
-  stat_summary(aes(x=as.factor(env),y=tot_burden,color=env),fun=median, geom="point", shape=95, size=12,stroke=edgewidth,alpha=1)+
-  geom_jitter(aes(x=as.factor(env),y=tot_burden,fill=env),shape=21, colour='black',size=markersize, alpha=alpha,width=width,stroke=edgewidth) +
+  geom_boxplot(aes(x=as.factor(env),y=tot_burden,fill=env)) +
   scale_fill_manual(values=c(NaCl,LiAc0.01,F1,F2),name ='',labels = c("NaCl", "LiAc 0.01", "Hybrid F1",'Hybrid F2'))+
   scale_color_manual(values=c(NaCl,LiAc0.01,F1,F2),name ='',labels = c("NaCl", "LiAc 0.01", "Hybrid F1",'Hybrid F2'))+
   theme(axis.title.x=element_blank(), 
@@ -125,12 +120,8 @@ H1_total <- ggplot(H1) +
         panel.grid.major.y = element_line(colour = "white", linetype = 1, linewidth = 0.5),
         panel.grid.minor.y = element_blank(),
         panel.spacing = unit(0.5, "lines"), 
-        text=element_text(family="EB Garamond"),
-        legend.position = "none",
-        plot.tag.position=c(0.62,0.94),
-        plot.tag = element_text(hjust = 0.5)) + 
-  ylab('SV mutational load') +
-  labs(tag='TOTAL')
+        legend.position = "none") + 
+  ylab('SV load')
 
 H2 <- subset(sv_data, (env == "NaCl" | env == "LiAc0.02" | env =='H2F1' | env =='H2F2'))
 H2$env <- factor(H2$env , levels=c('NaCl','LiAc0.02','H2F1','H2F2'))
@@ -152,13 +143,11 @@ H2_plot <- ggplot(H2) +
         panel.grid.major.y =  element_line(colour = "lightgrey", linetype = 1, linewidth = 0.5),
         panel.grid.minor.y = element_blank(),
         panel.spacing = unit(0.5, "lines"),
-        text=element_text(family="EB Garamond"),
         legend.spacing.y = unit(-0.35, 'cm'))+
   guides(fill = guide_legend(byrow = TRUE))
 H2_total <- ggplot(H2) + 
   geom_hline(yintercept=(mean(founder$tot_burden)),color='black',linetype='dashed',linewidth=0.7)+
-  stat_summary(aes(x=as.factor(env),y=tot_burden,color=env),fun=median, geom="point", shape=95, size=12,stroke=edgewidth,alpha=1)+
-  geom_jitter(aes(x=as.factor(env),y=tot_burden,fill=env),shape=21, colour='black',size=markersize, alpha=alpha,width=width,stroke=edgewidth) +
+  geom_boxplot(aes(x=as.factor(env),y=tot_burden,fill=env)) +
   scale_fill_manual(values=c(NaCl,LiAc0.02,F1,F2),name ='',labels = c("NaCl", "LiAc 0.02", "Hybrid F1",'Hybrid F2'))+
   scale_color_manual(values=c(NaCl,LiAc0.02,F1,F2),name ='',labels = c("NaCl", "LiAc 0.02", "Hybrid F1",'Hybrid F2'))+
   theme(axis.title.x=element_blank(), 
@@ -170,12 +159,8 @@ H2_total <- ggplot(H2) +
         panel.grid.major.y = element_line(colour = "white", linetype = 1, linewidth = 0.5),
         panel.grid.minor.y = element_blank(),
         panel.spacing = unit(0.5, "lines"), 
-        text=element_text(family="EB Garamond"),
-        legend.position = "none",
-        plot.tag.position=c(0.62,0.94),
-        plot.tag = element_text(hjust = 0.5)) + 
-  ylab('SV mutational load') +
-  labs(tag='TOTAL')
+        legend.position = "none") + 
+  ylab('SV load')
 
 H3 <- subset(sv_data, (env == "NaCl" | env == "Ethanol" | env =='H3F1' | env =='H3F2'))
 H3$env <- factor(H3$env , levels=c('NaCl','Ethanol','H3F1','H3F2'))
@@ -197,13 +182,11 @@ H3_plot <- ggplot(H3) +
         panel.grid.major.y =  element_line(colour = "lightgrey", linetype = 1, linewidth = 0.5),
         panel.grid.minor.y = element_blank(),
         panel.spacing = unit(0.5, "lines"),
-        text=element_text(family="EB Garamond"),
         legend.spacing.y = unit(-0.35, 'cm'))+
   guides(fill = guide_legend(byrow = TRUE))
 H3_total <- ggplot(H3) + 
   geom_hline(yintercept=(mean(founder$tot_burden)),color='black',linetype='dashed',linewidth=0.7)+
-  stat_summary(aes(x=as.factor(env),y=tot_burden,color=env),fun=median, geom="point", shape=95, size=12,stroke=edgewidth,alpha=1)+
-  geom_jitter(aes(x=as.factor(env),y=tot_burden,fill=env),shape=21, colour='black',size=markersize, alpha=alpha,width=width,stroke=edgewidth) +
+  geom_boxplot(aes(x=as.factor(env),y=tot_burden,fill=env)) +
   scale_fill_manual(values=c(NaCl,Ethanol,F1,F2),name ='',labels = c("NaCl", "Ethanol", "Hybrid F1",'Hybrid F2'))+
   scale_color_manual(values=c(NaCl,Ethanol,F1,F2),name ='',labels = c("NaCl", "Ethanol", "Hybrid F1",'Hybrid F2'))+
   theme(axis.title.x=element_blank(), 
@@ -215,17 +198,36 @@ H3_total <- ggplot(H3) +
         panel.grid.major.y = element_line(colour = "white", linetype = 1, linewidth = 0.5),
         panel.grid.minor.y = element_blank(),
         panel.spacing = unit(0.5, "lines"), 
-        text=element_text(family="EB Garamond"),
-        legend.position = "none",
-        plot.tag.position=c(0.62,0.94),
-        plot.tag = element_text(hjust = 0.5)) + 
-  ylab('SV mutational load') +
-  labs(tag='TOTAL')
+        legend.position = "none") + 
+  ylab('SV load')
 
 H1_total + H1_plot + H2_total + H2_plot + H3_total + H3_plot + 
   plot_layout(ncol=2,widths = c(1.3,8))
 
-ggsave('figures/Hybrid_Dynamics_SV_burden.pdf',width=11,height=5,dpi = 900)
+ggsave('figures/Hybrid_Dynamics_SV_burden.pdf',width=8,height=4,dpi = 900)
+
+# ==============================================================================
+# Pairwise Kruskal-Wallis
+# ==============================================================================
+kruskal.test(tot_burden ~ env, data = H1)
+pairwise.wilcox.test(H1$tot_burden, H1$env,
+                     p.adjust.method = "BH")
+kruskal.test(tot_burden ~ env, data = H2)
+pairwise.wilcox.test(H2$tot_burden, H2$env,
+                     p.adjust.method = "BH")
+kruskal.test(tot_burden ~ env, data = H3)
+pairwise.wilcox.test(H3$tot_burden, H3$env,
+                     p.adjust.method = "BH")
+
+H1 %>%
+  group_by(env) %>%
+  summarise(mean=mean(tot_burden),n = n())
+H2 %>%
+  group_by(env) %>%
+  summarise(mean=mean(tot_burden),n = n())
+H3 %>%
+  group_by(env) %>%
+  summarise(mean=mean(tot_burden),n = n())
 
 # ==============================================================================
 # ANOVA of SV mutational load
@@ -272,15 +274,14 @@ hybrid_corr <- ggplot(hybrid, aes(x=gen_num, y=tot_burden)) +
     panel.background = element_rect(fill = "lightgrey"),
     panel.grid.major.x = element_blank(),#element_line(colour = "lightgrey", linetype = 1, linewidth = 0.5),
     panel.grid.minor.x = element_blank(),
-    panel.grid.major.y = element_line(colour = "white", linetype = 2, linewidth = 0.5),
+    panel.grid.major.y = element_line(colour = "white", linetype = 1, linewidth = 0.5),
     panel.grid.minor.y = element_blank(),
     panel.spacing = unit(0.5, "lines"), 
-    text=element_text(family="EB Garamond"),
     legend.position = "none",
     plot.tag.position=c(0.62,0.94),
     plot.tag = element_text(hjust = 0.5)) + 
-  ylab('SV mutational load') +
-  xlab('generations') +
+  ylab('SV load') +
+  xlab('Generations') +
   ylim(70,280)
 
 H1$gen_num <- as.numeric(sub('G','',H1$gen))
@@ -296,10 +297,9 @@ H1_corr <- ggplot(H1, aes(x=gen_num, y=tot_burden)) +
         axis.text.y=element_blank(),
         panel.grid.major.x = element_blank(),#element_line(colour = "lightgrey", linetype = 1, linewidth = 0.5),
         panel.grid.minor.x = element_blank(),
-        panel.grid.major.y = element_line(colour = "lightgrey", linetype = 2, linewidth = 0.5),
+        panel.grid.major.y = element_line(colour = "lightgrey", linetype = 1, linewidth = 0.5),
         panel.grid.minor.y = element_blank(),
         panel.spacing = unit(0.5, "lines"), 
-        text=element_text(family="EB Garamond"),
         legend.position = "none")+
   ylim(70,280)
 
@@ -316,10 +316,9 @@ H2_corr <- ggplot(H2, aes(x=gen_num, y=tot_burden)) +
         axis.text.y=element_blank(),
         panel.grid.major.x = element_blank(),#element_line(colour = "lightgrey", linetype = 1, linewidth = 0.5),
         panel.grid.minor.x = element_blank(),
-        panel.grid.major.y = element_line(colour = "lightgrey", linetype = 2, linewidth = 0.5),
+        panel.grid.major.y = element_line(colour = "lightgrey", linetype = 1, linewidth = 0.5),
         panel.grid.minor.y = element_blank(),
         panel.spacing = unit(0.5, "lines"), 
-        text=element_text(family="EB Garamond"),
         legend.position = "none")+
   ylim(70,280)
 
@@ -336,15 +335,14 @@ H3_corr <- ggplot(H3, aes(x=gen_num, y=tot_burden)) +
         axis.text.y=element_blank(),
         panel.grid.major.x = element_blank(),#element_line(colour = "lightgrey", linetype = 1, linewidth = 0.5),
         panel.grid.minor.x = element_blank(),
-        panel.grid.major.y = element_line(colour = "lightgrey", linetype = 2, linewidth = 0.5),
+        panel.grid.major.y = element_line(colour = "lightgrey", linetype = 1, linewidth = 0.5),
         panel.grid.minor.y = element_blank(),
         panel.spacing = unit(0.5, "lines"), 
-        text=element_text(family="EB Garamond"),
         legend.position = "none")+
   ylim(70,280)
 
 hybrid_corr | H1_corr | H2_corr | H3_corr
-ggsave('figures/Hybrid_Dynamics_SV_burden_corr.pdf',width=8,height=2.5,dpi = 900)
+ggsave('figures/Hybrid_Dynamics_SV_burden_corr.pdf',width=7.5,height=2.75,dpi = 900)
 
 # ==============================================================================
 # PLOT INSERTION SV BURDEN
