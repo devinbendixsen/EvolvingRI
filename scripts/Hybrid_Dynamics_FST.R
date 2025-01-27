@@ -68,6 +68,17 @@ H3_fst <- dplyr::filter(H3_fst, grepl(paste(c('NaCl','Ethanol'),collapse="|"), p
 H3_fst$env_final <- ifelse(H3_fst$env=='within' & H3_fst$p1env == 'NaCl','NaCl',ifelse(H3_fst$env=='within' & H3_fst$p1env == 'Ethanol','Ethanol','Divergent'))
 
 
+H1_fst %>%
+  group_by(env_final) %>%
+  summarise(mean=mean(Fst.Estimate))
+
+H2_fst %>%
+  group_by(env_final) %>%
+  summarise(mean=mean(Fst.Estimate))
+
+H3_fst %>%
+  group_by(env_final) %>%
+  summarise(mean=mean(Fst.Estimate))
 # ==============================================================================
 # Environment Colors
 # ==============================================================================
@@ -99,7 +110,7 @@ H1_overall<- ggplot(H1_fst, aes(x=env_final, Fst.Estimate)) +
   labs(y='Fst Estimate')+
   guides(fill=guide_legend(title="Environment"))+
   ylim(0,0.51)
-
+H1_overall
 H1_scatter<- ggplot(H1_fst, aes(x=p2_gen_num, metric)) +
   geom_hline(yintercept=0.01770595, linetype="dashed",  
              color = "black", size=0.5) + 

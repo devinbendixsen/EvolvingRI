@@ -21,7 +21,7 @@ library(ggplot2)
 library(patchwork)
 library(vcfR)
 library(stringr)
-
+library(ggpubr)
 # ==============================================================================
 # 
 # ==============================================================================
@@ -342,7 +342,72 @@ H3_corr <- ggplot(H3, aes(x=gen_num, y=tot_burden)) +
   ylim(70,280)
 
 hybrid_corr | H1_corr | H2_corr | H3_corr
-ggsave('figures/Hybrid_Dynamics_SV_burden_corr.pdf',width=7.5,height=2.75,dpi = 900)
+ggsave('figures/Hybrid_Dynamics_SV_burden_corr.pdf',width=6,height=2.75,dpi = 900)
+
+
+# ==============================================================================
+# PLOT THE AMOUNT OF EACH SV TYPE
+# ==============================================================================
+sv_long <- sv_data %>%
+  subset(select=-c(tot_burden))
+sv_long <- sv_long %>%
+  pivot_longer(!c(sample,env,gen,rep), names_to ="type", values_to='count')
+
+sv_long_mean <- sv_long %>%
+  dplyr::group_by(env,type) %>%
+  dplyr::summarise(mean_sv=mean(count))
+
+sv_long_mean <- sv_long_mean %>%
+  mutate(env=factor(env, levels=rev(c('N','LE','NaCl','LiAc0.01','LiAc0.02','Ethanol','H1F1','H1F2','H2F1','H2F2','H3F1','H3F2'))),
+         type=factor(type,levels=c('DEL','INS','BND','INV','DUP')))
+
+ggplot(sv_long_mean, aes(x=type, y=env)) +
+  geom_tile( aes(fill=mean_sv),color = "white",
+             lwd = 1,
+             linetype = 1)+
+  scale_fill_gradient(low='white',high='#871F1F',
+                      guide = guide_colorbar(frame.colour = "black", ticks.colour = "black",barwidth=4.5,barheight=1,title = 'mean SV Count',title.position='top'))+
+  theme(panel.background = element_rect(fill = "white"),
+        plot.margin = margin(0.1, 0.1, 0.1, 0.1, "cm"),
+        legend.position = "top",
+        axis.title.y=element_blank(),axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+  xlab('Structural Variant Type') +
+  scale_y_discrete(breaks=rev(c('N','LE','NaCl','LiAc0.01','LiAc0.02','Ethanol','H1F1','H1F2','H2F1','H2F2','H3F1','H3F2')),
+                   labels=rev(c('N Founder','LE Founder','NaCl','LiAc 0.01','LiAc 0.02','Ethanol','NaCl x LiAc 0.01 F1','NaCl x LiAc 0.01 F2','NaCl x LiAc 0.02 F1','NaCl x LiAc 0.02 F2','NaCl x EtOH F1','NaCl x EtOH F2')))+
+  scale_x_discrete(labels=c('Deletion','Insertion','Breakend','Inversion','Duplication'))
+ggsave('figures/Hybrid_Dynamics_SV_types.pdf',width=3,height=3.75,dpi = 900)
+
+ggplot(sv_long_mean, aes(x=type, y=env)) +
+  geom_point( shape=21,aes(size=mean_sv,fill=mean_sv),color = "black",
+             lwd = 1,
+             linetype = 1)+
+  scale_fill_gradient(low='white',high='#871F1F',
+                      guide = guide_colorbar(frame.colour = "black", ticks.colour = "black",barwidth=4.5,barheight=1,title = 'mean SV Count',title.position='top'))+
+  theme(panel.background = element_rect(fill = "white"),
+        plot.margin = margin(0.1, 0.1, 0.1, 0.1, "cm"),
+        legend.position = "top",
+        axis.title.y=element_blank(),axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+  xlab('Structural Variant Type') +
+  scale_y_discrete(breaks=rev(c('N','LE','NaCl','LiAc0.01','LiAc0.02','Ethanol','H1F1','H1F2','H2F1','H2F2','H3F1','H3F2')),
+                   labels=rev(c('N Founder','LE Founder','NaCl','LiAc 0.01','LiAc 0.02','Ethanol','NaCl x LiAc 0.01 F1','NaCl x LiAc 0.01 F2','NaCl x LiAc 0.02 F1','NaCl x LiAc 0.02 F2','NaCl x EtOH F1','NaCl x EtOH F2')))+
+  scale_x_discrete(labels=c('Deletion','Insertion','Breakend','Inversion','Duplication'))
+ggsave('figures/Hybrid_Dynamics_SV_types.pdf',width=3,height=3.75,dpi = 900)
+
+ggplot(sv_long_mean, aes(x=type,)) +
+  geom_bar( shape=21,aes(size=mean_sv,fill=mean_sv),color = "black",
+              lwd = 1,
+              linetype = 1)+
+  scale_fill_gradient(low='white',high='#871F1F',
+                      guide = guide_colorbar(frame.colour = "black", ticks.colour = "black",barwidth=4.5,barheight=1,title = 'mean SV Count',title.position='top'))+
+  theme(panel.background = element_rect(fill = "white"),
+        plot.margin = margin(0.1, 0.1, 0.1, 0.1, "cm"),
+        legend.position = "top",
+        axis.title.y=element_blank(),axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+  xlab('Structural Variant Type') +
+  scale_y_discrete(breaks=rev(c('N','LE','NaCl','LiAc0.01','LiAc0.02','Ethanol','H1F1','H1F2','H2F1','H2F2','H3F1','H3F2')),
+                   labels=rev(c('N Founder','LE Founder','NaCl','LiAc 0.01','LiAc 0.02','Ethanol','NaCl x LiAc 0.01 F1','NaCl x LiAc 0.01 F2','NaCl x LiAc 0.02 F1','NaCl x LiAc 0.02 F2','NaCl x EtOH F1','NaCl x EtOH F2')))+
+  scale_x_discrete(labels=c('Deletion','Insertion','Breakend','Inversion','Duplication'))
+ggsave('figures/Hybrid_Dynamics_SV_types.pdf',width=3,height=3.75,dpi = 900)
 
 # ==============================================================================
 # PLOT INSERTION SV BURDEN

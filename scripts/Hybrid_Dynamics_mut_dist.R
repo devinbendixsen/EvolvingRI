@@ -28,6 +28,13 @@ chr_data <- data.frame(chr=c('I','II','III','IV','V','VI','VII','VIII','IX','X',
 old_chr <- data.frame(chr=c("BK006935.2", "BK006936.2","BK006937.2",  "BK006938.2", "BK006939.2", "BK006940.2","BK006941.2",  "BK006934.2", "BK006942.2",  "BK006943.2", "BK006944.2",  "BK006945.2", "BK006946.2", "BK006947.3",  "BK006948.2", "BK006949.2"))
 
 # ==============================================================================
+# PLOT CHROMOSOME SIZES
+# ==============================================================================
+ggplot(chr_data) + 
+  geom_bar(aes(x=chr))
+ggplot(chr_data, aes(x = chr, y = size)) +
+  geom_bar(stat = "identity")
+# ==============================================================================
 # LOAD AND FORMAT DATA
 # ==============================================================================
 fileNames <- Sys.glob("results/FREEC/*_CNVs.p.value.txt") # identify all samples
@@ -37,14 +44,21 @@ for (fileName in fileNames) {
   cnv_sample <- read.table(file=fileName,header=FALSE,skip = 1,col.names=c('chr','start','end','CN','type','Wilcoxon','KS'))
   cnv_sample$length <- (cnv_sample$end - cnv_sample$start)
   cnv_sample <- subset(cnv_sample,Wilcoxon<0.05 & KS <0.05)
+  cnv_sample <- cnv_sample %>%
+    mutate(amp=if_else(CN>2,length,0)) %>%
+    mutate(del=if_else(CN<2,length,0))
+  
   for (chr in old_chr$chr) {
-    cnv_sample <- rbind(cnv_sample,data.frame('chr'=chr,'start'=0,'end'=0,'CN'=2,'type'='x','Wilcoxon'=0,'KS'=0,'length'=0))
+    cnv_sample <- rbind(cnv_sample,data.frame('chr'=chr,'start'=0,'end'=0,'CN'=2,'type'='x','Wilcoxon'=0,'KS'=0,'length'=0,'amp'=0,'del'=0))
   }
   
   cnv_summary <- data.frame(row.names=c(old_chr$chr))
   cnv <- split(cnv_sample,cnv_sample$chr)
+  
   for (chro_num in unique(cnv_sample$chr)) {
     cnv_summary[chro_num,'cnv']=sum(cnv[[chro_num]]$length)
+    cnv_summary[chro_num,'amp']=sum(cnv[[chro_num]]$amp)
+    cnv_summary[chro_num,'del']=sum(cnv[[chro_num]]$del)
   }
   
   sample=sub('results/FREEC/','',fileName)
@@ -285,8 +299,108 @@ p_SV_total <- p_SV_top +guide_area() + p_SV + p_SV_right + plot_layout(heights=c
 
 
 # ==============================================================================
+# Plot aneuploidy
+# ==============================================================================
+cnv_aneuploidy <- cnv_data
+cnv_aneuploidy <- left_join(cnv_aneuploidy,chr_data)
+cnv_aneuploidy$cnv <- (cnv_aneuploidy$cnv/cnv_aneuploidy$size)*100
+cnv_aneuploidy$amp <- (cnv_aneuploidy$amp/cnv_aneuploidy$size)*100
+cnv_aneuploidy$del <- (cnv_aneuploidy$del/cnv_aneuploidy$size)*100
+cnv_aneuploidy <- cnv_aneuploidy %>%
+  mutate(aneu=if_else(amp>=del,amp,del))
+  
+cnv_aneuploidy <- cnv_aneuploidy %>%
+  mutate(aneu_count=if_else(aneu>60,1,0))
+cnv_aneu_count <- cnv_aneuploidy %>%
+  group_by(env,sample) %>%
+  summarise(n=sum(aneu_count))
+
+founder <- subset(cnv_aneu_count, sample %in% c("N_Founder","LE_Founder"))
+
+H1 <- subset(cnv_aneu_count, (env == "NaCl" | env == "LiAc0.01" | env =='H1F1' | env =='H1F2'))
+H1$env <- factor(H1$env , levels=c('NaCl','LiAc0.01','H1F1','H1F2'))
+
+H1_aneu <- ggplot(H1) + 
+  geom_hline(yintercept=(mean(founder$n)),color='black',linetype='dashed',linewidth=0.5)+
+  geom_boxplot(aes(x=as.factor(env),y=n,fill=env)) +
+  scale_fill_manual(values=c(NaCl,LiAc0.01,F1,F2),name ='',labels = c("NaCl", "LiAc0.01", "Hybrid F1",'Hybrid F2'))+
+  scale_color_manual(values=c(NaCl,LiAc0.01,F1,F2),name ='',labels = c("NaCl", "LiAc0.01", "Hybrid F1",'Hybrid F2'))+
+  theme(axis.title.x=element_blank(), 
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        panel.background = element_rect(fill = "lightgrey"),
+        panel.grid.major.x = element_line(colour = "white", linetype = 1, linewidth = 0.5),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_line(colour = "white", linetype = 1, linewidth = 0.5),
+        panel.grid.minor.y = element_blank(),
+        panel.spacing = unit(0.5, "lines"), 
+        legend.position = "none") + 
+  ylab('Aneuploidies') 
+H1_aneu
+H2 <- subset(cnv_aneu_count, (env == "NaCl" | env == "LiAc0.02" | env =='H2F1' | env =='H2F2'))
+H2$env <- factor(H2$env , levels=c('NaCl','LiAc0.02','H2F1','H2F2'))
+
+H2_aneu <- ggplot(H2) + 
+  geom_hline(yintercept=(mean(founder$n)),color='black',linetype='dashed',linewidth=0.5)+
+  geom_boxplot(aes(x=as.factor(env),y=n,fill=env)) +
+  scale_fill_manual(values=c(NaCl,LiAc0.02,F1,F2),name ='',labels = c("NaCl", "LiAc0.02", "Hybrid F1",'Hybrid F2'))+
+  scale_color_manual(values=c(NaCl,LiAc0.02,F1,F2),name ='',labels = c("NaCl", "LiAc0.02", "Hybrid F1",'Hybrid F2'))+
+  theme(axis.title.x=element_blank(), 
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        panel.background = element_rect(fill = "lightgrey"),
+        panel.grid.major.x = element_line(colour = "white", linetype = 1, linewidth = 0.5),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_line(colour = "white", linetype = 1, linewidth = 0.5),
+        panel.grid.minor.y = element_blank(),
+        axis.title.y=element_blank(),
+        panel.spacing = unit(0.5, "lines"), 
+        legend.position = "none")
+H2_aneu
+H3 <- subset(cnv_aneu_count, (env == "NaCl" | env == "Ethanol" | env =='H3F1' | env =='H3F2'))
+H3$env <- factor(H3$env , levels=c('NaCl','Ethanol','H3F1','H3F2'))
+
+H3_aneu <- ggplot(H3) + 
+  geom_hline(yintercept=(mean(founder$n)),color='black',linetype='dashed',linewidth=0.5)+
+  geom_boxplot(aes(x=as.factor(env),y=n,fill=env)) +
+  scale_fill_manual(values=c(NaCl,Ethanol,F1,F2),name ='',labels = c("NaCl", "Ethanol", "Hybrid F1",'Hybrid F2'))+
+  scale_color_manual(values=c(NaCl,Ethanol,F1,F2),name ='',labels = c("NaCl", "Ethanol", "Hybrid F1",'Hybrid F2'))+
+  theme(axis.title.x=element_blank(), 
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        panel.background = element_rect(fill = "lightgrey"),
+        panel.grid.major.x = element_line(colour = "white", linetype = 1, linewidth = 0.5),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_line(colour = "white", linetype = 1, linewidth = 0.5),
+        panel.grid.minor.y = element_blank(),
+        axis.title.y=element_blank(),
+        panel.spacing = unit(0.5, "lines"), 
+        legend.position = "none")
+H1_aneu+H2_aneu+H3_aneu
+
+kruskal.test(n ~ env, data = H1)
+pairwise.wilcox.test(H1$n, H1$env,
+                     p.adjust.method = "BH")
+kruskal.test(n ~ env, data = H2)
+pairwise.wilcox.test(H2$n, H2$env,
+                     p.adjust.method = "BH")
+kruskal.test(n ~ env, data = H3)
+pairwise.wilcox.test(H3$n, H3$env,
+                     p.adjust.method = "BH")
+
+H1 %>%
+  group_by(env) %>%
+  summarise(mean=mean(n),n = n())
+H2 %>%
+  group_by(env) %>%
+  summarise(mean=mean(n),n = n())
+H3 %>%
+  group_by(env) %>%
+  summarise(mean=mean(n),n = n())
+# ==============================================================================
 # Plot CNV distribution
 # ==============================================================================
+
 cnv_mean <- cnv_data %>%
   dplyr::group_by(env,chr) %>% 
   dplyr::summarise(mean_cnv=mean(cnv))
@@ -387,3 +501,130 @@ pairwise.wilcox.test(cnv_mean$mean_cnv, cnv_mean$env,
 kruskal.test(mean_cnv ~ chr, data = cnv_mean)
 pairwise.wilcox.test(cnv_mean$mean_cnv, cnv_mean$chr,
                      p.adjust.method = "BH")
+
+
+
+# ==============================================================================
+# 
+# ==============================================================================
+chr_size <- ggplot(chr_data, aes(x = chr, y = size/1000)) +
+  geom_bar(stat = "identity")+
+  ylab('Chromosome Size (kb)')+
+  xlab('Chromosome')+
+  ylim(0,1600)
+chr_size
+cnv_mean <- cnv_mean %>%
+  subset(!env %in% c('N','LE')) %>%
+  mutate(env=factor(env, levels=rev(c('NaCl','LiAc0.01','LiAc0.02','Ethanol','H1F1','H1F2','H2F1','H2F2','H3F1','H3F2'))),
+         chr=factor(chr,levels=c('I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI')))
+cnv_size <- ggplot(cnv_mean, aes(x=mean_cnv, y=size/1000)) + 
+  geom_smooth(method=lm, se=TRUE, fullrange=TRUE,color='black')+
+  stat_cor(label.x.npc = 0,label.y.npc = 0,p.accuracy=0.01,r.accuracy=0.01,size=2.5)+
+  geom_point(alpha=alpha,aes(fill=env),shape=21, colour='black')+
+  scale_fill_manual(values=rev(c('#4472c4ff','#9e49e1ff','#00b050ff','#ff0000ff','#808080','#d4a373','#808080','#d4a373','#808080','#d4a373')))+
+  theme(legend.position='none',
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank())+
+  xlab('CNV (%)') +
+  ylab('Chromosome Size (kb)')+
+  ylim(0,1600)
+
+snv_mean <- snv_mean %>%
+  subset(!env %in% c('N','LE')) %>%
+  mutate(env=factor(env, levels=rev(c('NaCl','LiAc0.01','LiAc0.02','Ethanol','H1F1','H1F2','H2F1','H2F2','H3F1','H3F2'))),
+         chr=factor(chr,levels=c('I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI')))
+snv_size <- ggplot(snv_mean, aes(x=mean_snv, y=size/1000)) + 
+  geom_smooth(method=lm, se=TRUE, fullrange=TRUE,color='black')+
+  stat_cor(label.x.npc = 0,label.y.npc = 0,p.accuracy=0.01,r.accuracy=0.01,size=2.5)+
+  geom_point(alpha=alpha,aes(fill=env),shape=21, colour='black')+
+  scale_fill_manual(values=rev(c('#4472c4ff','#9e49e1ff','#00b050ff','#ff0000ff','#808080','#d4a373','#808080','#d4a373','#808080','#d4a373'))) +
+  theme(legend.position='none',
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank())+
+  xlab('SNV (muts/kb)') +
+  ylab('Chromosome Size (kb)')+
+  ylim(0,1600)
+
+sv_mean <- sv_mean %>%
+  subset(!env %in% c('N','LE')) %>%
+  mutate(env=factor(env, levels=rev(c('NaCl','LiAc0.01','LiAc0.02','Ethanol','H1F1','H1F2','H2F1','H2F2','H3F1','H3F2'))),
+         chr=factor(chr,levels=c('I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI')))
+sv_size <- ggplot(sv_mean, aes(x=mean_sv, y=size/1000)) + 
+  geom_smooth(method=lm, se=TRUE, fullrange=TRUE,color='black')+
+  stat_cor(label.x.npc = 0,label.y.npc = 0,p.accuracy=0.01,r.accuracy=0.01,size=2.5)+
+  geom_point(alpha=alpha,aes(fill=env),shape=21, colour='black')+
+  scale_fill_manual(values=rev(c('#4472c4ff','#9e49e1ff','#00b050ff','#ff0000ff','#808080','#d4a373','#808080','#d4a373','#808080','#d4a373')))+
+  xlab('SV (muts/kb)') +
+  ylab('Chromosome Size (kb)')+
+  ylim(0,1600) +
+  theme(legend.position='none',
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank())
+
+chr_size + snv_size + sv_size + cnv_size +plot_layout(widths=c(2.5,1,1,1))
+ggsave('figures/Hybrid_Dynamics_SNV_SV_CNV_size.pdf',width=8,height=2,dpi = 900)
+
+
+# ==============================================================================
+# 
+# ==============================================================================
+chr_size <- ggplot(chr_data, aes(y = chr, x = size/1000)) +
+  geom_bar(stat = "identity")+
+  xlab('Chromosome Size (kb)')+
+  ylab('Chromosome')+
+  xlim(0,1600)+
+  scale_x_continuous(position = "top") 
+chr_size
+cnv_mean <- cnv_mean %>%
+  subset(!env %in% c('N','LE')) %>%
+  mutate(env=factor(env, levels=rev(c('NaCl','LiAc0.01','LiAc0.02','Ethanol','H1F1','H1F2','H2F1','H2F2','H3F1','H3F2'))),
+         chr=factor(chr,levels=c('I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI')))
+cnv_size <- ggplot(cnv_mean, aes(y=mean_cnv, x=size/1000)) + 
+  geom_smooth(method=lm, se=TRUE, fullrange=TRUE,color='black')+
+  stat_cor(label.x.npc = 0.5,label.y.npc = .75,p.accuracy=0.01,r.accuracy=0.01,size=2.5)+
+  geom_point(alpha=alpha,aes(colour=env),shape=1)+
+  scale_colour_manual(values=rev(c('#4472c4ff','#9e49e1ff','#00b050ff','#ff0000ff','#808080','#d4a373','#808080','#d4a373','#808080','#d4a373')))+
+  theme(legend.position='none',
+        axis.title.x=element_blank(), 
+        axis.text.x=element_blank())+
+  ylab('CNV (%)') +
+  xlab('Chromosome Size (kb)')+
+  xlim(0,1600)
+cnv_size
+snv_mean <- snv_mean %>%
+  subset(!env %in% c('N','LE')) %>%
+  mutate(env=factor(env, levels=rev(c('NaCl','LiAc0.01','LiAc0.02','Ethanol','H1F1','H1F2','H2F1','H2F2','H3F1','H3F2'))),
+         chr=factor(chr,levels=c('I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI')))
+snv_size <- ggplot(snv_mean, aes(y=mean_snv, x=size/1000)) + 
+  geom_smooth(method=lm, se=TRUE, fullrange=TRUE,color='black')+
+  stat_cor(label.x.npc = 0.5,label.y.npc = 0.75,p.accuracy=0.01,r.accuracy=0.01,size=2.5)+
+  geom_point(alpha=alpha,aes(colour=env),shape=1)+
+  scale_colour_manual(values=rev(c('#4472c4ff','#9e49e1ff','#00b050ff','#ff0000ff','#808080','#d4a373','#808080','#d4a373','#808080','#d4a373'))) +
+  theme(legend.position='none',
+        axis.title.x=element_blank(), 
+        axis.text.x=element_blank())+
+  ylab('SNV (muts/kb)') +
+  xlab('Chromosome Size (kb)')+
+  xlim(0,1600)
+snv_size
+sv_mean <- sv_mean %>%
+  subset(!env %in% c('N','LE')) %>%
+  mutate(env=factor(env, levels=rev(c('NaCl','LiAc0.01','LiAc0.02','Ethanol','H1F1','H1F2','H2F1','H2F2','H3F1','H3F2'))),
+         chr=factor(chr,levels=c('I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI')))
+sv_size <- ggplot(sv_mean, aes(y=mean_sv, x=size/1000)) + 
+  geom_smooth(method=lm, se=TRUE, fullrange=TRUE,color='black')+
+  stat_cor(label.x.npc = 0.5,label.y.npc = 0.75,p.accuracy=0.01,r.accuracy=0.01,size=2.5)+
+  geom_point(alpha=alpha,aes(colour=env),shape=1)+
+  scale_colour_manual(values=rev(c('#4472c4ff','#9e49e1ff','#00b050ff','#ff0000ff','#808080','#d4a373','#808080','#d4a373','#808080','#d4a373')))+
+  ylab('SV (muts/kb)') +
+  xlab('Chromosome Size (kb)')+
+  xlim(0,1600) +
+  theme(legend.position='none',
+        axis.title.x=element_blank(), 
+        axis.text.x=element_blank())
+
+chr_size / snv_size / sv_size / cnv_size +plot_layout(heights=c(2.5,1,1,1))
+ggsave('figures/Hybrid_Dynamics_SNV_SV_CNV_size.pdf',width=2,height=8,dpi = 900)
+
+
+
